@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'tarot_card.dart';
-import 'card_themes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class TarotCardWidget extends StatelessWidget {
@@ -18,7 +17,41 @@ class TarotCardWidget extends StatelessWidget {
     this.showBack = false,
   });
 
-  // ─── SVG corner flourish ──────────────────────────────────
+  // ─── Suit frame SVGs ─────────────────────────────────────
+  // One frame per suit — overlaid on top of background image
+  // Replace these with real suit frame SVGs when ready
+
+  static const String _frameSvgBalls =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340" preserveAspectRatio="none">'
+      '<rect x="2" y="2" width="216" height="336" rx="14" ry="14" stroke="#1A3A6B" stroke-width="4" fill="none"/>'
+      '<rect x="10" y="10" width="200" height="320" rx="10" ry="10" stroke="#1A3A6B" stroke-width="1.5" fill="none"/>'
+      '</svg>';
+
+  static const String _frameSvgPaddles =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340" preserveAspectRatio="none">'
+      '<rect x="2" y="2" width="216" height="336" rx="14" ry="14" stroke="#1B4D1B" stroke-width="4" fill="none"/>'
+      '<rect x="10" y="10" width="200" height="320" rx="10" ry="10" stroke="#1B4D1B" stroke-width="1.5" fill="none"/>'
+      '</svg>';
+
+  static const String _frameSvgHoles =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340" preserveAspectRatio="none">'
+      '<rect x="2" y="2" width="216" height="336" rx="14" ry="14" stroke="#8B0000" stroke-width="4" fill="none"/>'
+      '<rect x="10" y="10" width="200" height="320" rx="10" ry="10" stroke="#8B0000" stroke-width="1.5" fill="none"/>'
+      '</svg>';
+
+  static const String _frameSvgKnots =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340" preserveAspectRatio="none">'
+      '<rect x="2" y="2" width="216" height="336" rx="14" ry="14" stroke="#B8960C" stroke-width="4" fill="none"/>'
+      '<rect x="10" y="10" width="200" height="320" rx="10" ry="10" stroke="#B8960C" stroke-width="1.5" fill="none"/>'
+      '</svg>';
+
+  static const String _frameSvgMajor =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340" preserveAspectRatio="none">'
+      '<rect x="2" y="2" width="216" height="336" rx="14" ry="14" stroke="#4A1B8B" stroke-width="4" fill="none"/>'
+      '<rect x="10" y="10" width="200" height="320" rx="10" ry="10" stroke="#4A1B8B" stroke-width="1.5" fill="none"/>'
+      '</svg>';
+
+  // ─── Corner flourish SVG ──────────────────────────────────
   static const String _cornerSvg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
       '<path d="M 20 98 C 20 75 17 55 20 36" stroke="black" stroke-width="2.5" fill="none"/>'
@@ -37,40 +70,48 @@ class TarotCardWidget extends StatelessWidget {
       '<circle cx="59" cy="34" r="1.8" fill="black"/>'
       '</svg>';
 
-  // ─── Theme ────────────────────────────────────────────────
+  // ─── Theme colours ────────────────────────────────────────
 
   Color get _borderColor {
     if (card.isMajorArcana) return Color(0xFF4A1B8B);
-    return card.suit!.color;
-  }
-
-  Color get _backgroundColor {
-    if (card.isMajorArcana) return Color(0xFF1A1A2E);
     switch (card.suit!) {
-      case TarotSuit.balls:   return Color(0xFFF0F4FF);
-      case TarotSuit.paddles: return Color(0xFFF0F5F0);
-      case TarotSuit.holes:   return Color(0xFFFFF0F0);
-      case TarotSuit.knots:   return Color(0xFFF5E6C8);
+      case TarotSuit.balls:   return Color(0xFF1A3A6B);
+      case TarotSuit.paddles: return Color(0xFF1B4D1B);
+      case TarotSuit.holes:   return Color(0xFF8B0000);
+      case TarotSuit.knots:   return Color(0xFFB8960C);
     }
   }
 
-  Color get _bannerColor => _borderColor;
+  Color get _placeholderColor {
+    if (card.isMajorArcana) return Color(0xFF2D1B5E);
+    switch (card.suit!) {
+      case TarotSuit.balls:   return Color(0xFF1A3A6B);
+      case TarotSuit.paddles: return Color(0xFF1B4D1B);
+      case TarotSuit.holes:   return Color(0xFF8B0000);
+      case TarotSuit.knots:   return Color(0xFF8B6914);
+    }
+  }
 
-  Color get _textColor {
-    if (card.isMajorArcana) return Color(0xFFB8960C);
-    return card.suit!.color;
+  String get _frameSvg {
+    if (card.isMajorArcana) return _frameSvgMajor;
+    switch (card.suit!) {
+      case TarotSuit.balls:   return _frameSvgBalls;
+      case TarotSuit.paddles: return _frameSvgPaddles;
+      case TarotSuit.holes:   return _frameSvgHoles;
+      case TarotSuit.knots:   return _frameSvgKnots;
+    }
   }
 
   // ─── Helper widgets ───────────────────────────────────────
 
-  // Corner stat container — empty circle placeholder
+  // Empty stat container — placeholder until values assigned
   Widget _buildStatContainer() {
     return Container(
       width: 30,
       height: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: _backgroundColor,
+        color: Colors.black.withValues(alpha: 0.5),
         border: Border.all(
           color: _borderColor,
           width: 1.5,
@@ -81,7 +122,7 @@ class TarotCardWidget extends StatelessWidget {
           '—',
           style: TextStyle(
             fontSize: 12,
-            color: _borderColor,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -89,19 +130,19 @@ class TarotCardWidget extends StatelessWidget {
     );
   }
 
-  // Corner flourish with stat container overlaid
+  // Corner flourish with stat container
   Widget _buildCorner({required double rotation}) {
     return SizedBox(
-      width: 80,
-      height: 80,
+      width: 72,
+      height: 72,
       child: Stack(
         children: [
           Transform.rotate(
             angle: rotation,
             child: SvgPicture.string(
               _cornerSvg,
-              width: 80,
-              height: 80,
+              width: 72,
+              height: 72,
               colorFilter: ColorFilter.mode(
                 _borderColor,
                 BlendMode.srcIn,
@@ -125,16 +166,16 @@ class TarotCardWidget extends StatelessWidget {
       child: Container(
         height: 36,
         decoration: BoxDecoration(
-          color: _bannerColor,
+          color: Colors.black.withValues(alpha: 0.65),
           borderRadius: flipped
               ? BorderRadius.only(
-            topLeft: Radius.circular(13),
-            topRight: Radius.circular(13),
-          )
+                  topLeft: Radius.circular(13),
+                  topRight: Radius.circular(13),
+                )
               : BorderRadius.only(
-            bottomLeft: Radius.circular(13),
-            bottomRight: Radius.circular(13),
-          ),
+                  bottomLeft: Radius.circular(13),
+                  bottomRight: Radius.circular(13),
+                ),
         ),
         child: Center(
           child: Text(
@@ -151,40 +192,49 @@ class TarotCardWidget extends StatelessWidget {
     );
   }
 
-  // Artwork placeholder — colored block with suit symbol or arcana number
-  Widget _buildArtworkPlaceholder() {
+  // Background image — full bleed
+  // Shows placeholder colour until real image is available
+  Widget _buildBackground() {
+    // Check if artwork asset exists — use placeholder if not
+    // When real images are ready just drop them in assets/artwork/
+    // and this widget will automatically display them
     return Container(
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: _borderColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: _borderColor.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
           children: [
-            // Suit symbol or Roman numeral
-            Text(
-              card.isMajorArcana
-                  ? card.romanNumeral
-                  : card.suit!.symbol,
-              style: TextStyle(
-                fontSize: card.isMajorArcana ? 32 : 48,
-                color: _borderColor.withValues(alpha: 0.4),
-              ),
-            ),
-            SizedBox(height: 8),
-            // Artwork pending label
-            Text(
-              'Artwork\ncoming soon',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10,
-                color: _borderColor.withValues(alpha: 0.3),
-                fontStyle: FontStyle.italic,
+            // Placeholder background — replace with Image.asset when ready
+            Container(
+              color: _placeholderColor,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      card.isMajorArcana
+                          ? card.romanNumeral
+                          : card.suit!.symbol,
+                      style: TextStyle(
+                        fontSize: card.isMajorArcana ? 48 : 64,
+                        color: Colors.white.withValues(alpha: 0.15),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Artwork placeholder',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white.withValues(alpha: 0.2),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -245,97 +295,62 @@ class TarotCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (showBack) return _buildCardBack();
 
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _borderColor,
-          width: 3,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black38,
-            blurRadius: 12,
-            offset: Offset(0, 6),
+      child: Stack(
+        children: [
+
+          // Layer 1 — full bleed background image / placeholder
+          _buildBackground(),
+
+          // Layer 2 — suit frame SVG overlaid on background
+          Positioned.fill(
+            child: SvgPicture.string(
+              _frameSvg,
+              fit: BoxFit.fill,
+            ),
           ),
+
+          // Layer 3 — corner flourishes with stat containers
+          Positioned(
+            top: 36,
+            left: 0,
+            child: _buildCorner(rotation: 0),
+          ),
+          Positioned(
+            top: 36,
+            right: 0,
+            child: _buildCorner(rotation: math.pi / 2),
+          ),
+          Positioned(
+            bottom: 36,
+            left: 0,
+            child: _buildCorner(rotation: math.pi * 1.5),
+          ),
+          Positioned(
+            bottom: 36,
+            right: 0,
+            child: _buildCorner(rotation: math.pi),
+          ),
+
+          // Layer 4 — top banner (flipped — reads upside down)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: _buildBanner(card.topBanner, flipped: true),
+          ),
+
+          // Layer 5 — bottom banner (card name)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _buildBanner(card.fullName),
+          ),
+
         ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(13),
-        child: Stack(
-          children: [
-
-            // Layer 1 — inner border frame
-            Positioned.fill(
-              child: Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _borderColor,
-                    width: 1.5,
-                  ),
-                ),
-              ),
-            ),
-
-            // Layer 2 — top banner (flipped)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: _buildBanner(card.topBanner, flipped: true),
-            ),
-
-            // Layer 3 — bottom banner (card name)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildBanner(card.name),
-            ),
-
-            // Layer 4 — top left corner
-            Positioned(
-              top: 36,
-              left: 0,
-              child: _buildCorner(rotation: 0),
-            ),
-
-            // Layer 5 — top right corner
-            Positioned(
-              top: 36,
-              right: 0,
-              child: _buildCorner(rotation: math.pi / 2),
-            ),
-
-            // Layer 6 — bottom left corner
-            Positioned(
-              bottom: 36,
-              left: 0,
-              child: _buildCorner(rotation: math.pi * 1.5),
-            ),
-
-            // Layer 7 — bottom right corner
-            Positioned(
-              bottom: 36,
-              right: 0,
-              child: _buildCorner(rotation: math.pi),
-            ),
-
-            // Layer 8 — center artwork area
-            Positioned.fill(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 48, 20, 48),
-                child: _buildArtworkPlaceholder(),
-              ),
-            ),
-
-          ],
-        ),
       ),
     );
   }
