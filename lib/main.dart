@@ -3,6 +3,7 @@ import 'playing_card.dart';
 import 'card_border.dart';
 import 'tarot_card_widget.dart';
 import 'tarot_deck.dart';
+import 'fmk_game.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,20 +32,16 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  // Player names
   String player1Name = 'Player 1';
   String player2Name = 'Player 2';
 
-  // Hands and discard pile
   List<PlayingCard> player1Hand = [];
   List<PlayingCard> player2Hand = [];
   List<PlayingCard> discardPile = [];
 
-  // Current round cards
   PlayingCard? player1Card;
   PlayingCard? player2Card;
 
-  // Game state
   String roundWinner = '';
   bool gameOver = false;
   String winner = '';
@@ -135,30 +132,6 @@ class _GameScreenState extends State<GameScreen> {
           child: Column(
             children: [
 
-              // TEMPORARY TEST — CardBorder
-              CardBorder(
-                suit: '*',
-                title: 'Ace of Holes',
-                topTitle: 'In a clinic',
-                topLeft: '1',
-                topRight: '2',
-                bottomLeft: '4',
-                bottomRight: '3',
-              ),
-              SizedBox(height: 16),
-
-              // TEMPORARY TEST — Minor arcana card
-              TarotCardWidget(
-                card: TarotDeck.buildFullDeck().first,
-              ),
-              SizedBox(height: 16),
-
-              // TEMPORARY TEST — Major arcana card
-              TarotCardWidget(
-                card: TarotDeck.buildFullDeck().last,
-              ),
-              SizedBox(height: 16),
-
               // Game over banner
               if (gameOver)
                 Container(
@@ -184,8 +157,8 @@ class _GameScreenState extends State<GameScreen> {
                 gameOver
                     ? 'Game Over!'
                     : roundPlayed
-                    ? 'Round $roundNumber — $roundWinner'
-                    : 'Tap the card to play a round!',
+                        ? 'Round $roundNumber — $roundWinner'
+                        : 'Tap the card to play a round!',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -265,7 +238,7 @@ class _GameScreenState extends State<GameScreen> {
 
               SizedBox(height: 16),
 
-              // New game button
+              // New Game button
               ElevatedButton(
                 onPressed: _startNewGame,
                 style: ElevatedButton.styleFrom(
@@ -282,6 +255,32 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               ),
 
+              SizedBox(height: 12),
+
+              // F Marry Kill button
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FMKGameScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF4A1B8B),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
+                ),
+                child: Text(
+                  'Play F, Marry, Kill',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+
             ],
           ),
         ),
@@ -289,7 +288,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // Helper widget — player info card
   Widget _buildPlayerInfo(String name, int cardCount, Color color) {
     return Container(
       padding: EdgeInsets.all(12),
@@ -315,13 +313,12 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  // Helper widget — playing card
   Widget _buildCardWidget(
-      PlayingCard? card,
-      Color backgroundColor,
-      String playerName,
-      bool isWinner,
-      ) {
+    PlayingCard? card,
+    Color backgroundColor,
+    String playerName,
+    bool isWinner,
+  ) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 400),
       curve: Curves.easeInOut,
@@ -342,78 +339,78 @@ class _GameScreenState extends State<GameScreen> {
       ),
       child: card == null
           ? Center(
-        child: Text(
-          player1Card == null ? 'Tap to play!' : playerName,
-          style: TextStyle(
-            color: Colors.white54,
-            fontSize: 14,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      )
-          : Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      card.value,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: card.color,
-                      ),
-                    ),
-                    Text(
-                      card.suit,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: card.color,
-                      ),
-                    ),
-                  ],
+              child: Text(
+                player1Card == null ? 'Tap to play!' : playerName,
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 14,
                 ),
-              ],
-            ),
-            Text(
-              card.suit,
-              style: TextStyle(
-                fontSize: 56,
-                color: card.color,
+                textAlign: TextAlign.center,
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            card.value,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: card.color,
+                            ),
+                          ),
+                          Text(
+                            card.suit,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: card.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Text(
+                    card.suit,
+                    style: TextStyle(
+                      fontSize: 56,
+                      color: card.color,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            card.suit,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: card.color,
+                            ),
+                          ),
+                          Text(
+                            card.value,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: card.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      card.suit,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: card.color,
-                      ),
-                    ),
-                    Text(
-                      card.value,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: card.color,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
